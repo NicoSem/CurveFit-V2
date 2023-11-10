@@ -5,6 +5,7 @@ import re
 matplotlib.use('Qt5Agg')
 
 from PySide6.QtWidgets import QMainWindow, QApplication, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QPushButton
+from PySide6 import QtCore
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -85,12 +86,21 @@ class MainWindow(QMainWindow):
 
         if self.sender().text() == "Enter":
             if checkEntry(self.xEntry.text()) and checkEntry(self.yEntry.text()):
+
                 self.numRows += 1
                 self.valueTable.setRowCount(self.numRows)
-                self.valueTable.setItem(self.numRows - 1, 0, QTableWidgetItem(self.xEntry.text()))
+
+                item = QTableWidgetItem()
+                item.setData(QtCore.Qt.DisplayRole, float(self.xEntry.text()))
+                self.valueTable.setItem(self.numRows - 1, 0, item)
                 self.xEntries.append(float(self.xEntry.text()))
-                self.valueTable.setItem(self.numRows - 1, 1, QTableWidgetItem(self.yEntry.text()))
+
+                item = QTableWidgetItem()
+                item.setData(QtCore.Qt.DisplayRole, float(self.yEntry.text()))
+                self.valueTable.setItem(self.numRows - 1, 1, item)
                 self.yEntries.append(float(self.yEntry.text()))
+                
+                self.valueTable.sortItems(0)
                 updateEntryPlot()
             
 
