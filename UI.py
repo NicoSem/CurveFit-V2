@@ -15,7 +15,9 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        self.axes1 = fig.add_subplot(111)
+        #self.axes2 = fig.add_subplot(122)
+        
         super(MplCanvas, self).__init__(fig)
 
 
@@ -49,11 +51,15 @@ class MainWindow(QMainWindow):
         self.yEntry = QLineEdit()
         valueEnterButton = QPushButton("Enter")
         valueEnterButton.clicked.connect(self.buttonClick)
+        fitCurveButton = QPushButton("Fit")
+        fitCurveButton.clicked.connect(self.buttonClick)
         ValueEntryLayout.addWidget(xLabel)
         ValueEntryLayout.addWidget(self.xEntry)
         ValueEntryLayout.addWidget(yLabel)
         ValueEntryLayout.addWidget(self.yEntry)
         ValueEntryLayout.addWidget(valueEnterButton)
+        ValueEntryLayout.addWidget(fitCurveButton)
+
         valueEntrySection.setLayout(ValueEntryLayout)
 
 
@@ -79,8 +85,9 @@ class MainWindow(QMainWindow):
 
         def updateEntryPlot():
             print("updating plot")
-            self.plotSection.axes.cla()
-            self.plotSection.axes.scatter(self.xEntries, self.yEntries)
+            self.plotSection.axes1.cla()
+            self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
+            self.plotSection.axes1.plot([1,2], [1,1], color='red')
             self.plotSection.draw()
 
 
@@ -99,9 +106,13 @@ class MainWindow(QMainWindow):
                 item.setData(QtCore.Qt.DisplayRole, float(self.yEntry.text()))
                 self.valueTable.setItem(self.numRows - 1, 1, item)
                 self.yEntries.append(float(self.yEntry.text()))
-                
+
                 self.valueTable.sortItems(0)
                 updateEntryPlot()
+
+        elif self.sender().text() == "Fit":
+            self.plotSection.axes1.plot([1,2], [1,1], color='red')
+            self.plotSection.draw()
             
 
 def checkEntry(a):
