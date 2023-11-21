@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.plotSection = MplCanvas(self, width=5, height=4, dpi=100)
         self.xEntries = []
         self.yEntries = []
-
+        self.firstFit = True
 
         self.valueTable = QTableWidget()
         self.valueTable.setColumnCount(2)
@@ -54,15 +54,17 @@ class MainWindow(QMainWindow):
         valueEnterButton.clicked.connect(self.buttonClick)
         fitCurveButton = QPushButton("Fit")
         fitCurveButton.clicked.connect(self.buttonClick)
+        clearButton = QPushButton("Clear")
+        clearButton.clicked.connect(self.buttonClick)
         ValueEntryLayout.addWidget(xLabel)
         ValueEntryLayout.addWidget(self.xEntry)
         ValueEntryLayout.addWidget(yLabel)
         ValueEntryLayout.addWidget(self.yEntry)
         ValueEntryLayout.addWidget(valueEnterButton)
         ValueEntryLayout.addWidget(fitCurveButton)
+        ValueEntryLayout.addWidget(clearButton)
 
         valueEntrySection.setLayout(ValueEntryLayout)
-
 
         valuesSection = QWidget()
         valuesLayout = QVBoxLayout()
@@ -81,16 +83,22 @@ class MainWindow(QMainWindow):
 
 
         self.show()
+        
+    def addEntry(self, x, y):
+            if len(self.xEntries) == 0:
+                self.xEntries.append(x)
+                self.yEntries.append(y)
+            else:
+                for i in range(0, len(self.xEntries)):
+                    if x < self.xEntries[i]:
+                        self.xEntries.insert(i, x)
+                        self.yEntries.insert(i, y)
+                        break
+                    if i == len(self.xEntries) - 1:
+                        self.xEntries.append(x)
+                        self.yEntries.append(y)
 
     def buttonClick(self):
-
-        def updatePlot():
-            print("updating plot")
-            self.plotSection.axes1.cla()
-            self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
-            
-            self.plotSection.draw()
-
 
         if self.sender().text() == "Enter":
             if checkEntry(self.xEntry.text()) and checkEntry(self.yEntry.text()):
@@ -101,25 +109,43 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem()
                 item.setData(QtCore.Qt.DisplayRole, float(self.xEntry.text()))
                 self.valueTable.setItem(self.numRows - 1, 0, item)
-                self.xEntries.append(float(self.xEntry.text()))
+                x = (float(self.xEntry.text()))
 
                 item = QTableWidgetItem()
                 item.setData(QtCore.Qt.DisplayRole, float(self.yEntry.text()))
                 self.valueTable.setItem(self.numRows - 1, 1, item)
-                self.yEntries.append(float(self.yEntry.text()))
+                y = (float(self.yEntry.text()))
+                self.addEntry(x, y)
 
                 self.valueTable.sortItems(0)
                 
                 self.plotSection.axes1.cla()
                 self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
                 self.plotSection.draw()
+                print(self.xEntries)
+                print(self.yEntries)
 
         elif self.sender().text() == "Fit":
-            result = CurveFit.fit(self.xEntries, self.yEntries)
+
+            if self.firstFit:
+                self.result = Polynomial.Poly([0], self.xEntries, self.yEntries)
+                self.firstFit = False
+            self.result = CurveFit.fit(self.xEntries, self.yEntries, self.result)
             self.plotSection.axes1.cla()
             self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
-            self.plotSection.axes1.plot(self.xEntries, result.mapToY(self.xEntries), color='red')
+            self.plotSection.axes1.plot(self.xEntries, self.result.mapToY(self.xEntries), color='red')
             self.plotSection.draw()
+            print("Done ", str(self.result))
+
+        elif self.sender().text() == "Clear":
+            self.xEntries.clear()
+            self.yEntries.clear()
+            self.valueTable.clear()
+            self.valueTable.setRowCount(0)
+            self.plotSection.axes1.cla()
+            self.plotSection.draw()
+
+            
             
 
 def checkEntry(a):

@@ -5,9 +5,6 @@ import random
 import sys
 import Polynomial
 
-x2 = []
-y2 = []
-p = []
 size = 10
 cRange = 100
 iterations = 100
@@ -16,22 +13,13 @@ mutateMax = 10
 norm = 0
 maxDegree = 20
 
+
 def sum(a):
     result = 0
     for i in a:
         result += abs(i)
     return result
 
-'''
-def calcValues(c, x, d):
-    err = 0
-    for i in range(0, len(x)):
-        result = c[len(c)-1]
-        for j in range(1, d):
-            result += c[j]*x[i]**(d-j)
-        y2.append(result)
-    return y2
-'''
 
 def rank(r: list[Polynomial.Poly]):
     
@@ -47,14 +35,20 @@ def rank(r: list[Polynomial.Poly]):
     return r
 
 
-def mix(a, b, x, y):
+def mix(a: Polynomial.Poly, b: Polynomial.Poly, x, y):
     c = []
-    for i in range(0, min(a.degree, b.degree)):
-        c.append((a.coefficients[i] + b.coefficients[i])/2)
-    '''
+    for i in range(0, max(a.degree, b.degree) + 1):
+        try:
+            c.append((a.coefficients[i] + b.coefficients[i])/2)
+        except:
+            try:
+                c.append(a.coefficients[i] / 2)
+            except:
+                c.append(b.coefficients[i] / 2)
+
     if(random.uniform(0,1) > mutateChance):
-        c[random.randint(1,len(c)-1)] *= -mutateMax + 2*mutateMax*random.uniform(0,1)
-    '''
+        c[random.randint(0,len(c)-1)] *= -mutateMax + 2*mutateMax*random.uniform(0,1)
+
     p = Polynomial.Poly(c, x, y)
     
     return p
@@ -67,30 +61,9 @@ def generate(d, x, y):
     p = Polynomial.Poly(c, x, y)
     return p
 
-'''
-def printPoly(c):
-    result = 'y = '
-    for i in range(1, len(c)-2):
-        result += str(c[i]) + 'x^' + str(len(c)-2 - i) + ' + '
-    result += str(c[len(c)-1])
-    print(result)
-
     
-with open('points.csv', 'r') as f:
-    reader = csv.reader(f)
-    line = 0
-    for row in reader:
-        if line != 0:
-            if(row):
-                #print(row)
-                x.append(float(row[0]))
-                y.append(float(row[1]))
-        line += 1
-    x2 = range(int(min(x)), int(max(x)), 1)
-'''
-    
-def fit(x, y):
-    population = [Polynomial.Poly([0], x, y)]
+def fit(x, y, p: Polynomial.Poly):
+    population = [Polynomial.Poly(p.coefficients, x, y)]
     best = population[0]
     for i in range(1, maxDegree+1):
         for j in range(0,size):
@@ -111,17 +84,8 @@ def fit(x, y):
         population.clear()
     return best
     
-    
 '''
-printPoly(best)
-
-plt.figure(1)
-plt.scatter(x, y)
-
-plt.figure(1)
-plt.plot(x2, calcValues(best, x2, len(best)-2), color='red')
-plt.show()
+p1 = Polynomial.Poly([2, 3, 4],[0],[0])
+p2 = Polynomial.Poly([1],[0],[0])
+print(mix(p1,p2,[0],[0]))
 '''
-
-
-    
