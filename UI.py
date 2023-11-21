@@ -1,6 +1,8 @@
 import sys
 import matplotlib
 import re
+import CurveFit
+import Polynomial
 
 matplotlib.use('Qt5Agg')
 
@@ -16,7 +18,6 @@ class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes1 = fig.add_subplot(111)
-        #self.axes2 = fig.add_subplot(122)
         
         super(MplCanvas, self).__init__(fig)
 
@@ -83,11 +84,11 @@ class MainWindow(QMainWindow):
 
     def buttonClick(self):
 
-        def updateEntryPlot():
+        def updatePlot():
             print("updating plot")
             self.plotSection.axes1.cla()
             self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
-            self.plotSection.axes1.plot([1,2], [1,1], color='red')
+            
             self.plotSection.draw()
 
 
@@ -108,10 +109,16 @@ class MainWindow(QMainWindow):
                 self.yEntries.append(float(self.yEntry.text()))
 
                 self.valueTable.sortItems(0)
-                updateEntryPlot()
+                
+                self.plotSection.axes1.cla()
+                self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
+                self.plotSection.draw()
 
         elif self.sender().text() == "Fit":
-            self.plotSection.axes1.plot([1,2], [1,1], color='red')
+            result = CurveFit.fit(self.xEntries, self.yEntries)
+            self.plotSection.axes1.cla()
+            self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
+            self.plotSection.axes1.plot(self.xEntries, result.mapToY(self.xEntries), color='red')
             self.plotSection.draw()
             
 
