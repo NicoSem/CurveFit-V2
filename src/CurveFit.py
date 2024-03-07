@@ -59,3 +59,8 @@ def fit(x, y, p: Polynomial):
             best = population[0]
         population.clear()
     return best
+
+class point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
