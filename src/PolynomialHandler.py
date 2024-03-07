@@ -1,4 +1,4 @@
-
+import random
 
 class Polynomial:
     def __init__(self, coefficients, x, y):
@@ -26,5 +26,36 @@ class Polynomial:
             err += (y[i] - self.yAt(x[i]))**2
         self.error = err
 
+    def mutate(self, MUTATION_CHANCE, MUTATION_MAX):
+        if(random.uniform(0,1) > MUTATION_CHANCE):
+            self.coefficients[random.randint(0,len(c)-1)] *= -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
+
     def __str__(self):
         return str(self.coefficients)
+        
+    
+
+def generateRandomPolynomial(degree, coefficentRange, xValues, yValues):
+    coefficients = []
+    for i in range(0, degree+1):
+        coefficients.append(getRandomIntegerInRange(coefficentRange))
+    return Polynomial(coefficients, xValues, yValues)
+
+
+def getRandomIntegerInRange(range):
+    return random.randint(-range,range)
+
+
+def createAveragePolynomial(a: Polynomial, b: Polynomial, xValues, yValues):
+    coefficients = []
+    for i in range(0, max(a.degree, b.degree) + 1):
+        try:
+            coefficients.append((a.coefficients[i] + b.coefficients[i])/2)
+        except:
+            try:
+                coefficients.append(a.coefficients[i] / 2)
+            except:
+                coefficients.append(b.coefficients[i] / 2)
+
+    return Polynomial(coefficients, xValues, yValues)
+    
