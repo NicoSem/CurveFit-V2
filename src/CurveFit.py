@@ -4,7 +4,8 @@ from typing import Final
 import csv
 import random
 import sys
-import Polynomial
+import PolynomialHandler
+from PolynomialHandler import Polynomial
 
 POPULATION_SIZE: Final = 10
 COEF_GEN_RANGE: Final = 100
@@ -21,7 +22,7 @@ def absoluteSum(numbers):
     return result
 
 
-def rankPolynomialsByError(polynomials: list[Polynomial.Poly]):
+def rankPolynomialsByError(polynomials: list[Polynomial]):
 
     listSize = len(polynomials)
 
@@ -36,7 +37,7 @@ def rankPolynomialsByError(polynomials: list[Polynomial.Poly]):
     return polynomials
 
 
-def mix(a: Polynomial.Poly, b: Polynomial.Poly, x, y):
+def mix(a: Polynomial, b: Polynomial, x, y):
     c = []
     for i in range(0, max(a.degree, b.degree) + 1):
         try:
@@ -50,7 +51,7 @@ def mix(a: Polynomial.Poly, b: Polynomial.Poly, x, y):
     if(random.uniform(0,1) > MUTATION_CHANCE):
         c[random.randint(0,len(c)-1)] *= -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
 
-    p = Polynomial.Poly(c, x, y)
+    p = PolynomialHandler.Polynomial(c, x, y)
     
     return p
 
@@ -59,14 +60,14 @@ def generateRandomPolynomial(degree, xValues, yValues):
     coefficients = []
     for i in range(0, degree+1):
         coefficients.append(getRandomIntegerInRange(COEF_GEN_RANGE))
-    return Polynomial.Poly(coefficients, xValues, yValues)
+    return PolynomialHandler.Polynomial(coefficients, xValues, yValues)
 
 def getRandomIntegerInRange(range):
     return random.randint(-range,range)
 
     
-def fit(x, y, p: Polynomial.Poly):
-    population = [Polynomial.Poly(p.coefficients, x, y)]
+def fit(x, y, p: Polynomial):
+    population = [PolynomialHandler.Polynomial(p.coefficients, x, y)]
     best = population[0]
     for i in range(1, MAX_POLYNOMIAL_DEGREE+1):
         for j in range(0,POPULATION_SIZE):

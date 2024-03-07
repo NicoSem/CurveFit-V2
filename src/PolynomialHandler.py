@@ -1,4 +1,6 @@
-class Poly:
+
+
+class Polynomial:
     def __init__(self, coefficients, x, y):
         #Coefficients start from lowest to highest degree starting from y intecrept
         self.coefficients = coefficients
