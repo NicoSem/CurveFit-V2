@@ -12,6 +12,7 @@ MAX_ITERATIONS: Final = 100
 MUTATION_CHANCE: Final = 0.5
 MUTATION_MAX: Final = 10
 MAX_POLYNOMIAL_DEGREE: Final = 20
+points = []
 
 
 def absoluteSum(numbers):
@@ -60,7 +61,7 @@ def fit(x, y, p: Polynomial):
         population.clear()
     return best
 
-class point:
+class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
