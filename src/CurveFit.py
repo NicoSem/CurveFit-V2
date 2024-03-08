@@ -51,6 +51,51 @@ class Polynomial:
 
     def __str__(self):
         return str(self.coefficients)
+    
+
+class Fitter:
+    def __init__(self):
+        self.points = list[Point]
+
+    def addPoint(self, x, y):
+        self.points.append(Point(x, y))
+
+    def fit(self, p: Polynomial):
+        population = [PolynomialHandler.Polynomial(p.coefficients, self.points)]
+        best = population[0]
+        for i in range(1, MAX_POLYNOMIAL_DEGREE+1):
+            for j in range(0,POPULATION_SIZE):
+                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+            for k in range(1, MAX_ITERATIONS):
+                population = rankPolynomialsByError(population)
+                for l in range(1,6):
+                    population.pop(len(population)-1)
+
+                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(PolynomialHandler.createAveragePolynomial(population[0], population[1], self.points))
+                population.append(PolynomialHandler.createAveragePolynomial(population[2], population[3], self.points))
+                population.append(PolynomialHandler.createAveragePolynomial(population[4], population[5], self.points))
+            if population[0].error < best.error:
+                best = population[0]
+            population.clear()
+        return best
+
+def rankPolynomialsByError(polynomials: list[Polynomial]):
+
+        listSize = len(polynomials)
+
+        for i in range(0,listSize-1):
+            unrankedPoly = polynomials.pop(i)
+            for j in range(0,listSize-2):
+                if unrankedPoly.error < polynomials[j].error:
+                    polynomials.insert(j, unrankedPoly)
+                    break
+            if len(polynomials) < listSize:
+                polynomials.append(unrankedPoly)
+        return polynomials
+
 
 def absoluteSum(numbers):
     result = 0
@@ -59,40 +104,4 @@ def absoluteSum(numbers):
     return result
 
 
-def rankPolynomialsByError(polynomials: list[Polynomial]):
-
-    listSize = len(polynomials)
-
-    for i in range(0,listSize-1):
-        unrankedPoly = polynomials.pop(i)
-        for j in range(0,listSize-2):
-            if unrankedPoly.error < polynomials[j].error:
-                polynomials.insert(j, unrankedPoly)
-                break
-        if len(polynomials) < listSize:
-            polynomials.append(unrankedPoly)
-    return polynomials
-
-
-def fit(points: list[Point], p: Polynomial):
-    population = [PolynomialHandler.Polynomial(p.coefficients, points)]
-    best = population[0]
-    for i in range(1, MAX_POLYNOMIAL_DEGREE+1):
-        for j in range(0,POPULATION_SIZE):
-            population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, points))
-        for k in range(1, MAX_ITERATIONS):
-            population = rankPolynomialsByError(population)
-            for l in range(1,6):
-                population.pop(len(population)-1)
-
-            population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, points))
-            population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, points))
-            population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, points))
-            population.append(PolynomialHandler.createAveragePolynomial(population[0], population[1], points))
-            population.append(PolynomialHandler.createAveragePolynomial(population[2], population[3], points))
-            population.append(PolynomialHandler.createAveragePolynomial(population[4], population[5], points))
-        if population[0].error < best.error:
-            best = population[0]
-        population.clear()
-    return best
-
+    
