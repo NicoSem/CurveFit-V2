@@ -86,8 +86,8 @@ class MainWindow(QMainWindow):
         self.show()
         
     def addEntry(self, x, y):
+            self.fitter.addPoint(x, y)
             if len(self.xEntries) == 0:
-                self.fitter.addPoint(x, y)
                 self.xEntries.append(x)
                 self.yEntries.append(y)
             else:

@@ -2,6 +2,7 @@
 import numpy as np
 from typing import Final
 import random
+import math
 import csv
 import sys
 
@@ -22,8 +23,13 @@ class Polynomial:
         #Coefficients start from lowest to highest degree starting from y intecrept
         self.coefficients = coefficients
         self.degree = len(coefficients) - 1
-        self.points = points
         int: self.error = self.calculateError(points)
+
+    def __init__(self):
+        #Coefficients start from lowest to highest degree starting from y intecrept
+        self.coefficients = [0]
+        self.degree = 0
+        int: self.error = math.inf
 
     def yAt(self, x):
         result = 0
@@ -49,21 +55,24 @@ class Polynomial:
             self.coefficients[random.randint(0,len(self.coefficients)-1)] *= -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
 
     def __str__(self):
-        return str(self.coefficients)
+        return str(str(self.coefficients) + " error: " + str(self.error))
     
 
 class Fitter:
     def __init__(self):
         self.points = []
+        self.bestPolynomial = Polynomial()
 
     def addPoint(self, x, y):
         self.points.append(Point(x, y))
+        self.bestPolynomial.calculateError(self.points)
 
     def fit(self):
+        print("number of points: " + str(len(self.points)))
         population = [Polynomial([0], self.points)]
         best = population[0]
         for i in range(0, MAX_POLYNOMIAL_DEGREE+1):
-            for j in range(0,POPULATION_SIZE):
+            for j in range(1,POPULATION_SIZE):
                 population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
             for k in range(1, MAX_ITERATIONS):
                 population = rankPolynomialsByError(population)
