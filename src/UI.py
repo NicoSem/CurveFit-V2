@@ -124,8 +124,6 @@ class MainWindow(QMainWindow):
                 self.plotSection.axes1.cla()
                 self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
                 self.plotSection.draw()
-                print(self.xEntries)
-                print(self.yEntries)
 
         elif self.sender().text() == "Fit":
             self.result = self.fitter.fit()
