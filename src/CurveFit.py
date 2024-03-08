@@ -74,7 +74,7 @@ def rankPolynomialsByError(polynomials: list[Polynomial]):
     return polynomials
 
 
-def fit(points: list[pt.Point], p: Polynomial):
+def fit(points: list[Point], p: Polynomial):
     population = [PolynomialHandler.Polynomial(p.coefficients, points)]
     best = population[0]
     for i in range(1, MAX_POLYNOMIAL_DEGREE+1):

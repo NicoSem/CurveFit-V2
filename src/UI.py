@@ -2,7 +2,7 @@ import sys
 import matplotlib
 import re
 import CurveFit
-import PolynomialHandler
+from CurveFit import Polynomial, Point
 
 matplotlib.use('Qt5Agg')
 
@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
         elif self.sender().text() == "Fit":
 
             if self.firstFit:
-                self.result = PolynomialHandler.Polynomial([0], self.points)
+                self.result = Polynomial([0], self.points)
                 self.firstFit = False
             self.result = CurveFit.fit(self.points, self.result)
             self.plotSection.axes1.cla()
