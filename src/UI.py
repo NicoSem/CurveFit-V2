@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         self.plotSection = MplCanvas(self, width=5, height=4, dpi=100)
         self.xEntries = []
         self.yEntries = []
+        self.points = []
         self.firstFit = True
 
         self.valueTable = QTableWidget()
@@ -86,6 +87,7 @@ class MainWindow(QMainWindow):
         
     def addEntry(self, x, y):
             if len(self.xEntries) == 0:
+                self.points.append(CurveFit.Point(x, y))
                 self.xEntries.append(x)
                 self.yEntries.append(y)
             else:
@@ -128,9 +130,9 @@ class MainWindow(QMainWindow):
         elif self.sender().text() == "Fit":
 
             if self.firstFit:
-                self.result = PolynomialHandler.Polynomial([0], self.xEntries, self.yEntries)
+                self.result = PolynomialHandler.Polynomial([0], self.points)
                 self.firstFit = False
-            self.result = CurveFit.fit(self.xEntries, self.yEntries, self.result)
+            self.result = CurveFit.fit(self.points, self.result)
             self.plotSection.axes1.cla()
             self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
             self.plotSection.axes1.plot(self.xEntries, self.result.mapToY(self.xEntries), color='red')
