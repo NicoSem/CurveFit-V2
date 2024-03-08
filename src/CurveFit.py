@@ -4,7 +4,6 @@ from typing import Final
 import random
 import csv
 import sys
-import PolynomialHandler
 
 POPULATION_SIZE: Final = 10
 COEF_GEN_RANGE: Final = 100
@@ -55,28 +54,28 @@ class Polynomial:
 
 class Fitter:
     def __init__(self):
-        self.points = list[Point]
+        self.points = []
 
     def addPoint(self, x, y):
         self.points.append(Point(x, y))
 
-    def fit(self, p: Polynomial):
-        population = [PolynomialHandler.Polynomial(p.coefficients, self.points)]
+    def fit(self):
+        population = [Polynomial([0], self.points)]
         best = population[0]
-        for i in range(1, MAX_POLYNOMIAL_DEGREE+1):
+        for i in range(0, MAX_POLYNOMIAL_DEGREE+1):
             for j in range(0,POPULATION_SIZE):
-                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
             for k in range(1, MAX_ITERATIONS):
                 population = rankPolynomialsByError(population)
                 for l in range(1,6):
                     population.pop(len(population)-1)
 
-                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-                population.append(PolynomialHandler.generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-                population.append(PolynomialHandler.createAveragePolynomial(population[0], population[1], self.points))
-                population.append(PolynomialHandler.createAveragePolynomial(population[2], population[3], self.points))
-                population.append(PolynomialHandler.createAveragePolynomial(population[4], population[5], self.points))
+                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
+                population.append(createAveragePolynomial(population[0], population[1], self.points))
+                population.append(createAveragePolynomial(population[2], population[3], self.points))
+                population.append(createAveragePolynomial(population[4], population[5], self.points))
             if population[0].error < best.error:
                 best = population[0]
             population.clear()
@@ -103,5 +102,27 @@ def absoluteSum(numbers):
         result += abs(num)
     return result
 
+def generateRandomPolynomial(degree, coefficentRange, points: list[Point]):
+    coefficients = []
+    for i in range(0, degree+1):
+        coefficients.append(getRandomIntegerInRange(coefficentRange))
+    return Polynomial(coefficients, points)
 
+
+def getRandomIntegerInRange(range):
+    return random.randint(-range,range)
+
+
+def createAveragePolynomial(a: Polynomial, b: Polynomial, points: list[Point]):
+    coefficients = []
+    for i in range(0, max(a.degree, b.degree) + 1):
+        try:
+            coefficients.append((a.coefficients[i] + b.coefficients[i])/2)
+        except:
+            try:
+                coefficients.append(a.coefficients[i] / 2)
+            except:
+                coefficients.append(b.coefficients[i] / 2)
+
+    return Polynomial(coefficients, points)
     

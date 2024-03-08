@@ -1,8 +1,7 @@
 import sys
 import matplotlib
 import re
-import CurveFit
-from CurveFit import Polynomial, Point
+from CurveFit import Fitter
 
 matplotlib.use('Qt5Agg')
 
@@ -32,8 +31,9 @@ class MainWindow(QMainWindow):
         self.plotSection = MplCanvas(self, width=5, height=4, dpi=100)
         self.xEntries = []
         self.yEntries = []
-        self.points = []
         self.firstFit = True
+
+        self.fitter = Fitter()
 
         self.valueTable = QTableWidget()
         self.valueTable.setColumnCount(2)
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         
     def addEntry(self, x, y):
             if len(self.xEntries) == 0:
-                self.points.append(CurveFit.Point(x, y))
+                self.fitter.addPoint(x, y)
                 self.xEntries.append(x)
                 self.yEntries.append(y)
             else:
@@ -128,11 +128,7 @@ class MainWindow(QMainWindow):
                 print(self.yEntries)
 
         elif self.sender().text() == "Fit":
-
-            if self.firstFit:
-                self.result = Polynomial([0], self.points)
-                self.firstFit = False
-            self.result = CurveFit.fit(self.points, self.result)
+            self.result = self.fitter.fit()
             self.plotSection.axes1.cla()
             self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
             self.plotSection.axes1.plot(self.xEntries, self.result.mapToY(self.xEntries), color='red')
