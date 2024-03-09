@@ -6,9 +6,9 @@ import math
 import csv
 import sys
 
-POPULATION_SIZE: Final = 10
+POPULATION_SIZE: Final = 200
 COEF_GEN_RANGE: Final = 100
-MAX_ITERATIONS: Final = 100
+MAX_ITERATIONS: Final = 1000
 MUTATION_CHANCE: Final = 1.0
 MUTATION_MAX: Final = 5
 MAX_POLYNOMIAL_DEGREE: Final = 20
@@ -54,14 +54,15 @@ class Polynomial:
         self.error = err
 
     def mutate(self, points: list[Point]):
-        if random.uniform(0,1) < MUTATION_CHANCE:
+        if random.uniform(0,1) > 0.5:
             self.coefficients[random.randint(0,len(self.coefficients)-1)] += -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
-        
-        if random.uniform(0,1) < MUTATION_CHANCE:
+        else:
             if random.uniform(0,1) > 0.5:
                 if self.degree > 0:
                     self.coefficients.pop()
                     self.degree -= 1
+                else:
+                    self.coefficients[random.randint(0,len(self.coefficients)-1)] += -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
             else:
                 self.coefficients.append(getRandomIntegerInRange(COEF_GEN_RANGE))
                 self.degree += 1
@@ -83,7 +84,8 @@ class Fitter:
 
     def fit(self):
         population = [self.bestPolynomial]
-        for i in range(0, MAX_POLYNOMIAL_DEGREE+1):
+        for i in range(0, MAX_ITERATIONS):
+
             for j in range(0, POPULATION_SIZE):
                 population.append(cloneAndMutate(self.bestPolynomial, self.points))   
 
