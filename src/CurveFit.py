@@ -9,8 +9,8 @@ import sys
 POPULATION_SIZE: Final = 10
 COEF_GEN_RANGE: Final = 100
 MAX_ITERATIONS: Final = 100
-MUTATION_CHANCE: Final = 0.5
-MUTATION_MAX: Final = 10
+MUTATION_CHANCE: Final = 1.0
+MUTATION_MAX: Final = 5
 MAX_POLYNOMIAL_DEGREE: Final = 20
 
 class Point:
@@ -21,11 +21,18 @@ class Point:
 class Polynomial:
     def __init__(self, coefficients, points: list[Point]):
         #Coefficients start from lowest to highest degree starting from y intecrept
-        self.coefficients = coefficients
+        self.coefficients: list = coefficients
         self.degree = len(coefficients) - 1
         self.error = math.inf
         if len(coefficients) > 0:
             self.calculateError(points)
+
+    def clone(self, points: list[Point]):
+        coefficients = []
+        for c in self.coefficients:
+            coefficients.append(c)
+        p = Polynomial(coefficients, points)
+        return p
 
     def yAt(self, x):
         result = 0
@@ -41,14 +48,15 @@ class Polynomial:
 
     
     def calculateError(self, points: list[Point]):
-        err: float = 0
+        err = 0
         for i in range(0, len(points)):
             err += (points[i].y - self.yAt(points[i].x))**2
         self.error = err
 
-    def mutate(self, MUTATION_CHANCE, MUTATION_MAX):
-        if(random.uniform(0,1) > MUTATION_CHANCE):
-            self.coefficients[random.randint(0,len(self.coefficients)-1)] *= -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
+    def mutate(self, points: list[Point]):
+        if(random.uniform(0,1) < MUTATION_CHANCE):
+            self.coefficients[random.randint(0,len(self.coefficients)-1)] += -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
+        self.calculateError(points)
 
     def __str__(self):
         return str(self.coefficients) + " error: " + str(self.error)
@@ -66,19 +74,13 @@ class Fitter:
     def fit(self):
         population = [self.bestPolynomial]
         for i in range(0, MAX_POLYNOMIAL_DEGREE+1):
-            for j in range(1,POPULATION_SIZE):
-                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-            for k in range(1, MAX_ITERATIONS):
-                population = rankPolynomialsByError(population)
-                for l in range(1,6):
-                    population.pop(len(population)-1)
+            for j in range(1, 10):
+                population.append(cloneAndMutate(self.bestPolynomial, self.points))   
+            for k in range(11, POPULATION_SIZE):
+                population.append(cloneAndMutate(self.bestPolynomial, self.points))
 
-                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-                population.append(generateRandomPolynomial(i, COEF_GEN_RANGE, self.points))
-                population.append(createAveragePolynomial(population[0], population[1], self.points))
-                population.append(createAveragePolynomial(population[2], population[3], self.points))
-                population.append(createAveragePolynomial(population[4], population[5], self.points))
+            rankPolynomialsByError(population)
+
             if population[0].error < self.bestPolynomial.error:
                 self.bestPolynomial = population[0]
             population.clear()
@@ -109,7 +111,7 @@ def generateRandomPolynomial(degree, coefficentRange, points: list[Point]):
     coefficients = []
     for i in range(0, degree+1):
         coefficients.append(getRandomIntegerInRange(coefficentRange))
-    return Polynomial(coefficients=coefficients, points=points)
+    return Polynomial(coefficients, points)
 
 
 def getRandomIntegerInRange(range):
@@ -129,3 +131,7 @@ def createAveragePolynomial(a: Polynomial, b: Polynomial, points: list[Point]):
 
     return Polynomial(coefficients, points)
     
+def cloneAndMutate(parent: Polynomial, points: list[Point]) -> Polynomial:
+    child = parent.clone(points)
+    child.mutate(points)
+    return child

@@ -82,7 +82,6 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-
         self.show()
         
     def addEntry(self, x, y):
