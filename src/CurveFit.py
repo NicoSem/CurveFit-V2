@@ -54,8 +54,18 @@ class Polynomial:
         self.error = err
 
     def mutate(self, points: list[Point]):
-        if(random.uniform(0,1) < MUTATION_CHANCE):
+        if random.uniform(0,1) < MUTATION_CHANCE:
             self.coefficients[random.randint(0,len(self.coefficients)-1)] += -MUTATION_MAX + 2*MUTATION_MAX*random.uniform(0,1)
+        
+        if random.uniform(0,1) < MUTATION_CHANCE:
+            if random.uniform(0,1) > 0.5:
+                if self.degree > 0:
+                    self.coefficients.pop()
+                    self.degree -= 1
+            else:
+                self.coefficients.append(getRandomIntegerInRange(COEF_GEN_RANGE))
+                self.degree += 1
+
         self.calculateError(points)
 
     def __str__(self):
@@ -74,10 +84,8 @@ class Fitter:
     def fit(self):
         population = [self.bestPolynomial]
         for i in range(0, MAX_POLYNOMIAL_DEGREE+1):
-            for j in range(1, 10):
+            for j in range(0, POPULATION_SIZE):
                 population.append(cloneAndMutate(self.bestPolynomial, self.points))   
-            for k in range(11, POPULATION_SIZE):
-                population.append(cloneAndMutate(self.bestPolynomial, self.points))
 
             rankPolynomialsByError(population)
 
