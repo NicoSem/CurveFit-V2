@@ -72,8 +72,8 @@ class Polynomial:
     def __str__(self):
         result = ""
         for i in range(self.degree, 0, -1):
-            result += str(self.coefficients[i]) + "x^" + str(i) + " "
-        result += str(self.coefficients[0])
+            result += "{:10.2f}".format(self.coefficients[i]) + "x^" + str(i) + " "
+        result += "{:10.2f}".format(self.coefficients[0])
         return result
     
 
