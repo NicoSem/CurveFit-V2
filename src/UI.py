@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
             self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
             self.plotSection.axes1.plot(self.xEntries, self.result.mapToY(self.xEntries), color='red')
             self.plotSection.draw()
-            print("Done ", str(self.result))
+            print("Done ", self.result)
 
         elif self.sender().text() == "Clear":
             self.xEntries.clear()

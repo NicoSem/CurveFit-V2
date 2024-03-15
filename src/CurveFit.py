@@ -70,7 +70,11 @@ class Polynomial:
         self.calculateError(points)
 
     def __str__(self):
-        return str(self.coefficients) + " error: " + str(self.error)
+        result = ""
+        for i in range(self.degree, 0, -1):
+            result += str(self.coefficients[i]) + "x^" + str(i) + " "
+        result += str(self.coefficients[0])
+        return result
     
 
 class Fitter:
