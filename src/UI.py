@@ -149,6 +149,10 @@ class MainWindow(QMainWindow):
             self.numRows -= 1
             self.valueTable.setRowCount(self.numRows)
 
+            self.plotSection.axes1.cla()
+            self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
+            self.plotSection.draw()
+
         elif self.sender().text() == "Fit":
             self.result = self.fitter.fit()
             self.plotSection.axes1.cla()
