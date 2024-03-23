@@ -1,5 +1,6 @@
 import sys
 import matplotlib
+import numpy as np
 import re
 from CurveFit import Fitter
 
@@ -11,6 +12,7 @@ from PySide6 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
+PLOT_RESOLUTION = 100
 
 class MplCanvas(FigureCanvasQTAgg):
 
@@ -101,6 +103,19 @@ class MainWindow(QMainWindow):
                         self.xEntries.append(x)
                         self.yEntries.append(y)
 
+    def xAxisRange(self):
+        if len(self.xEntries) > 1:
+            min = self.xEntries[0]
+            max = self.xEntries[0]
+            for n in self.xEntries:
+                if n < min:
+                    min = n
+                if n > max:
+                    max = n
+            return np.arange(min, max, 1/PLOT_RESOLUTION)
+        else:
+            return [0]
+
     def buttonClick(self):
 
         if self.sender().text() == "Enter":
@@ -138,7 +153,7 @@ class MainWindow(QMainWindow):
             self.result = self.fitter.fit()
             self.plotSection.axes1.cla()
             self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
-            self.plotSection.axes1.plot(self.xEntries, self.result.mapToY(self.xEntries), color='red')
+            self.plotSection.axes1.plot(self.xAxisRange(), self.result.mapToY(self.xAxisRange()), color='red')
             self.plotSection.draw()
             print("Done ", self.result)
 
@@ -153,8 +168,7 @@ class MainWindow(QMainWindow):
             self.plotSection.axes1.cla()
             self.plotSection.draw()
 
-            
-            
+
 
 def checkEntry(a):
     try:
