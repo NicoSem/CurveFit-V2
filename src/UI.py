@@ -127,7 +127,13 @@ class MainWindow(QMainWindow):
                 self.plotSection.draw()
 
         elif self.sender().text() == "Delete":
-            print("delete pressed")
+            self.xEntries.pop(self.valueTable.currentRow())
+            self.yEntries.pop(self.valueTable.currentRow())
+            self.fitter.points.pop(self.valueTable.currentRow())
+            self.valueTable.removeRow(self.valueTable.currentRow())
+            self.numRows -= 1
+            self.valueTable.setRowCount(self.numRows)
+
         elif self.sender().text() == "Fit":
             self.result = self.fitter.fit()
             self.plotSection.axes1.cla()
@@ -141,6 +147,8 @@ class MainWindow(QMainWindow):
             self.yEntries.clear()
             self.fitter.points.clear()
             self.valueTable.clear()
+            self.numRows = 0
+            self.valueTable.setRowCount(self.numRows)
             self.valueTable.setRowCount(0)
             self.plotSection.axes1.cla()
             self.plotSection.draw()
