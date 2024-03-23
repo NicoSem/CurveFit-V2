@@ -76,8 +76,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.plotSection)
         layout.addWidget(valuesSection)
-
-
+        
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
@@ -135,6 +134,7 @@ class MainWindow(QMainWindow):
         elif self.sender().text() == "Clear":
             self.xEntries.clear()
             self.yEntries.clear()
+            self.fitter.points.clear()
             self.valueTable.clear()
             self.valueTable.setRowCount(0)
             self.plotSection.axes1.cla()
