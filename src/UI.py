@@ -53,6 +53,8 @@ class MainWindow(QMainWindow):
         self.yEntry = QLineEdit()
         valueEnterButton = QPushButton("Enter")
         valueEnterButton.clicked.connect(self.buttonClick)
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.buttonClick)
         fitCurveButton = QPushButton("Fit")
         fitCurveButton.clicked.connect(self.buttonClick)
         clearButton = QPushButton("Clear")
@@ -62,6 +64,7 @@ class MainWindow(QMainWindow):
         ValueEntryLayout.addWidget(yLabel)
         ValueEntryLayout.addWidget(self.yEntry)
         ValueEntryLayout.addWidget(valueEnterButton)
+        ValueEntryLayout.addWidget(deleteButton)
         ValueEntryLayout.addWidget(fitCurveButton)
         ValueEntryLayout.addWidget(clearButton)
 
@@ -76,7 +79,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.plotSection)
         layout.addWidget(valuesSection)
-        
+
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
@@ -123,6 +126,8 @@ class MainWindow(QMainWindow):
                 self.plotSection.axes1.scatter(self.xEntries, self.yEntries)
                 self.plotSection.draw()
 
+        elif self.sender().text() == "Delete":
+            print("delete pressed")
         elif self.sender().text() == "Fit":
             self.result = self.fitter.fit()
             self.plotSection.axes1.cla()
